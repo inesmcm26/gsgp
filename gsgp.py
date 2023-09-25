@@ -28,31 +28,13 @@ from configs import NUMVARS, GENERATIONS, POPSIZE, TRUNC
 
 from data import dataset, target
 from generators import randfunct
-from operators import mutation, crossover
+from operators import crossover
+from fitness import sse as fitness
 
 vars = ['x'+str(i) for i in range(NUMVARS)] # variable names
 
 print(dataset)
 print(target)
-
-
-def fitness(individual):
-    print('------------------------ FITNESS -------------------------------')
-    'Determine the fitness (error) of an individual. Lower is better.'
-
-    print('INDIVIDUAL', individual.geno())
-
-    outputs = np.apply_along_axis(lambda x: individual(*x), axis=1, arr = dataset)
-
-    print('OUTPUTS', outputs)
-
-    print('TARGET', target)
-
-    sse = np.sum(np.square(outputs - target))
-
-    print('FITNESS', sse)
-    
-    return sse
     
 def evolve():
     'Main function.'
