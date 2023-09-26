@@ -2,8 +2,11 @@ import random
 from math import exp
 
 from configs import MUTATION_STEP
+from data import target
 
 from generators import memoize, randfunct
+
+from fitness import rmse as fitness
 
 def crossover(p1,p2):
     """
@@ -32,7 +35,14 @@ def crossover(p1,p2):
 
     offspring.geno = lambda: '({} * sigmoid({}) + {} * (1 - sigmoid({})))'.format(p1.geno(), rf.geno(), p2.geno(), rf.geno())
     
-    print('OFFSPRING', offspring.geno())
+    print('OFFSPRING', offspring.geno(), 'FITNESS', fitness(offspring)[0])
+
+    if fitness(offspring)[0] > fitness(p1)[0] and fitness(offspring)[0] > fitness(p2)[0]:
+        
+        print('TARGET', target)
+        print('OUTPUTS', fitness(offspring)[1])
+
+        raise Exception('Crossover anomaly!!!')
     
     return offspring
 
@@ -67,5 +77,5 @@ def mutation(p):
     offspring = memoize(offspring)
     offspring.geno = lambda: '({} + {} * sigmoid({} - {}))'.format(p.geno(), ms, rf1.geno(), rf2.geno())
 
-    print('MUTATION OFFSPRING', offspring.geno())
+    print('MUTATION OFFSPRING', offspring.geno(), 'FITNESS', fitness(offspring)[0])
     return offspring

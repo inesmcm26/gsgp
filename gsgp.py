@@ -1,35 +1,13 @@
-
-'''
-
-TINY_GSGP.py: A Tiny and Efficient Implementation of Geometric Semantic Genetic Programming Using Higher-Order Functions and Memoization
-
-Author: Alberto Moraglio (albmor@gmail.com) 
-
-Features:
-
-- Individuals are represented directly as Python (anonymous) functions.
-
-- Crossover and mutation are higher-order functions.
-
-- Offspring functions call parent functions rather than embed their definitions (no grwoth, implicit ancestry trace).
-
-- Memoization of individuals turns time complexity of fitness evalutation from exponential to constant.
-
-- The final solution is a compiled function. It can be extracted using the ancestry trace to reconstruct its 'source code'. 
-
-This implementation is to evolve Boolean expressions. It can be easily adapted to evolve arithmetic expressions or classifiers.
-
-'''
-
 import random
 import numpy as np
 
-from configs import NUMVARS, GENERATIONS, POPSIZE, TRUNC
+from configs import NUMVARS, GENERATIONS, POPSIZE, TRUNC, MUT_PROB, XO_PROB, TOURNAMENT_SIZE
 
 from data import dataset, target
 from generators import randfunct
-from operators import crossover
-from fitness import sse as fitness
+from operators import mutation, crossover
+from fitness import rmse as fitness
+from selection import tournament
 
 vars = ['x'+str(i) for i in range(NUMVARS)] # variable names
 
@@ -46,27 +24,57 @@ def evolve():
         print()
         print(f'------------------------------------------ GENERATION {gen} ----------------------------------------------')
         
-        graded_pop = [(fitness(ind), ind) for ind in pop] # evaluate population fitness
-
+        graded_pop = [(fitness(ind)[0], ind) for ind in pop] # Evaluate population fitness
+        
+        print('---------------------------')
         for ind in graded_pop:
             print('IND', ind[1].geno(), 'FITNESS', ind[0])
+        print('---------------------------')
 
-        sorted_pop = [ind[1] for ind in sorted(graded_pop, key = lambda x: x[0])] # sort population on fitness
+        sorted_pop = [ind[1] for ind in sorted(graded_pop, key = lambda x: x[0])] # Sort population on fitness
 
-        print('gen: ', gen , ' min fit: ', fitness(sorted_pop[0]), ' avg fit: ', sum(ind[0] for ind in graded_pop)/(POPSIZE)) # print stats
-        
-        parent_pop = sorted_pop[:int(TRUNC*POPSIZE)] # selected parents
+        print('Gen: ', gen , ' Min fit: ', fitness(sorted_pop[0])[0], ' Avg fit: ', sum(ind[0] for ind in graded_pop)/(POPSIZE)) # print stats
         
         if gen == GENERATIONS:
             break
         
-        for i in range(POPSIZE): # create offspring population
-            par = random.sample(parent_pop, 2) # pick two random parents
+        # Create new population
+        new_pop = []
 
-            pop[i] = crossover(par[0],par[1]) # create offspring
+        for _ in range(POPSIZE):
+            # Genetic operators
+            random_number = random.random()
+
+            print('RANDOM NUMBER', random_number)
+
+            # Mutation
+            if random_number < MUT_PROB:
+                print('MUTATION')
+                p = tournament(pop, TOURNAMENT_SIZE)
+                child = mutation(p)
+            # Crossover
+            elif random_number < MUT_PROB + XO_PROB:
+                print('CROSSOVER')
+                p1 = tournament(pop, TOURNAMENT_SIZE)
+                p2 = tournament(pop, TOURNAMENT_SIZE)
+                child = crossover(p1, p2)
+            # Replication
+            else:
+                print('REPLICATION')
+                child = tournament(pop, TOURNAMENT_SIZE)
+                print('CHILD', child.geno())
+
+            # Add child to population
+            new_pop.append(child)
+        
+        pop = new_pop
+
+        print('NEW POPULATION')
+        for ind in pop:
+            print('IND', ind.geno())
 
     best_ind = sorted_pop[0]
-    best_fitness = fitness(sorted_pop[0])
+    best_fitness = fitness(sorted_pop[0])[0]
 
     print('Best individual in last population:', best_ind.geno(), ' \n With fitness:', best_fitness)
     print('Predictions\n', np.apply_along_axis(lambda x: best_ind(*x), axis=1, arr = dataset))
