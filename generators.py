@@ -34,7 +34,7 @@ def safe_division(x, y):
     Custom function to handle division by zero
     """
 
-    return x / y if y != 0 else 1
+    return x / y if int(y) != 0 else 1.0
 
 def randexpr(dep):
     """
@@ -53,7 +53,7 @@ def randexpr(dep):
             right_expr = randexpr(dep - 1)
             
             # Add a runtime check for division by zero
-            return f'safe_division({left_expr}, {right_expr})'
+            return f'(safe_division({left_expr}, {right_expr}))'
         
         else:
             return '({} {} {})'.format(randexpr(dep-1),
