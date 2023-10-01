@@ -8,6 +8,7 @@ from generators import randfunct
 from operators import mutation, crossover
 from fitness import rmse as fitness
 from selection import tournament
+from convex_hull import is_inside_convex_hull
 
 vars = ['x'+str(i) for i in range(NUMVARS)] # variable names
 
@@ -18,6 +19,11 @@ def evolve():
     'Main function.'
     pop = [randfunct() for _ in range(POPSIZE)] # initialise population
 
+    is_inside = is_inside_convex_hull(pop)
+
+    print(is_inside)
+
+    return
 
     for gen in range(GENERATIONS+1):
         print()

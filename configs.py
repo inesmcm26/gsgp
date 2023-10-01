@@ -1,6 +1,6 @@
 NUMVARS = 2 # number of input variables
 DEPTH = 4 # maximum depth of expressions in the initial population
-POPSIZE = 20 # population size
+POPSIZE = 5 # population size
 GENERATIONS = 120 # number of generations
 MUTATION_STEP = 1
 
