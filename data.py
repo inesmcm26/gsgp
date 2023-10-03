@@ -3,6 +3,6 @@ import numpy as np
 
 from configs import NUMVARS
 
-dataset = np.random.randint(0, 5, size=(2, NUMVARS)).astype(float)
+dataset = np.random.randint(0, 5, size=(50, NUMVARS)).astype(float)
 
 target = np.sum(dataset, axis=1)

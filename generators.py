@@ -2,7 +2,7 @@ import random
 
 from configs import NUMVARS, DEPTH
 
-vars = ['x'+str(i) for i in range(NUMVARS)] # variable names
+vars = ['x' + str(i) for i in range(NUMVARS)] # variable names
 
 operators = ['+', '-', '*', '/']
 
@@ -23,7 +23,7 @@ def memoize(f):
             return f.cache[args]
         # Otherwise calculate output
         else:
-            f.cache[args] = f(*args) # calculates the output of args
+            f.cache[args] = round(f(*args), 17) # calculates the output of args
             # print('NOT IN CACHE')
             return f.cache[args]
         

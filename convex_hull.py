@@ -45,8 +45,8 @@ def get_errors_matrix(ind_list):
     for idx, individual in enumerate(ind_list):
         outputs = np.apply_along_axis(lambda x: individual(*x), axis=1, arr = dataset)
 
-        print(f'OUTPUTS OF IND {individual.geno()}')
-        print(outputs)
+        # print(f'OUTPUTS OF IND {individual.geno()}')
+        # print(outputs)
 
         errors[:, idx] = target - outputs
 

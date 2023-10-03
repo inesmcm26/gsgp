@@ -10,10 +10,14 @@ from fitness import rmse as fitness
 from selection import tournament
 from convex_hull import is_inside_convex_hull
 
+from plots import plot_single_run
+
 vars = ['x'+str(i) for i in range(NUMVARS)] # variable names
 
 print(dataset)
 print(target)
+
+fitness_history = []
     
 def evolve():
     'Main function.'
@@ -21,9 +25,9 @@ def evolve():
 
     is_inside = is_inside_convex_hull(pop)
 
-    print(is_inside)
+    # print(is_inside)
 
-    return
+    # return
 
     for gen in range(GENERATIONS+1):
         print()
@@ -37,8 +41,11 @@ def evolve():
         # print('---------------------------')
 
         sorted_pop = [ind[1] for ind in sorted(graded_pop, key = lambda x: x[0])] # Sort population on fitness
+        
+        best_fitness = fitness(sorted_pop[0])[0]
+        fitness_history.append(best_fitness)
 
-        print('Min fit: ', fitness(sorted_pop[0])[0], ' Avg fit: ', sum(ind[0] for ind in graded_pop)/(POPSIZE)) # print stats
+        print('Min fit: ', best_fitness, ' Avg fit: ', sum(ind[0] for ind in graded_pop)/(POPSIZE)) # print stats
         
         if gen == GENERATIONS:
             break
@@ -82,8 +89,11 @@ def evolve():
     best_ind = sorted_pop[0]
     best_fitness = fitness(sorted_pop[0])[0]
 
-    print('Best individual in last population:', best_ind.geno(), ' \n With fitness:', best_fitness)
+    print('Best individual in last population:', #best_ind.geno(),
+          ' \n With fitness:', best_fitness)
     print('Predictions\n', np.apply_along_axis(lambda x: best_ind(*x), axis=1, arr = dataset))
 
 evolve()
 
+
+plot_single_run(fitness_history)

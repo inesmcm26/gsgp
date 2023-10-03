@@ -1,6 +1,9 @@
 import random
-from math import exp, sqrt
+from math import exp
 import numpy as np
+import decimal
+
+decimal.getcontext().prec = 14
 
 from configs import MUTATION_STEP
 from data import target
@@ -10,6 +13,30 @@ from generators import memoize, randfunct
 from fitness import rmse as fitness
 
 from data import dataset
+
+eps = 1e-15
+
+def count_decimal_places(number):
+    if isinstance(number, float):
+        # Convert the float to a string
+        number_str = str(number)
+        
+        # Check if there is a decimal point in the string
+        if '.' in number_str:
+            # Split the string at the decimal point
+            parts = number_str.split('.')
+            
+            # The number of decimal places is the length of the second part
+            if len(parts) == 2:
+                return len(parts[1])
+            else:
+                # If there is no decimal part (e.g., 5.0), return 0
+                return 0
+        else:
+            # If there's no decimal point, it's an integer, so return 0
+            return 0
+    else:
+        raise ValueError("Input is not a float")
 
 def crossover(p1,p2):
     """
@@ -35,38 +62,52 @@ def crossover(p1,p2):
     offspring = lambda *x: ((p1(*x) * random_num) + (p2(*x) * (1.0 - random_num)))  # Define arithmetic crossover operation
     offspring = memoize(offspring) # add cache
 
-    offspring.geno = lambda: '(({} * sigmoid({})) + ({} * (1 - sigmoid({}))))'.format(p1.geno(), random_num, p2.geno(), random_num)
+    offspring.geno = lambda: '(({} * {}) + ({} * (1 - {})))'.format(p1.geno(), random_num, p2.geno(), random_num)
     
     # print('OFFSPRING', offspring.geno(), 'FITNESS', fitness(offspring)[0])
+    if fitness(offspring)[0] > (fitness(p1)[0] + eps) and fitness(offspring)[0] > (fitness(p2)[0] + eps):
 
-    # if fitness(offspring)[0] > fitness(p1)[0] and fitness(offspring)[0] > fitness(p2)[0]:
+        print('RANDOM NUMBER', random_num)
+        # print('NR DECIMAL PLACES RANDOM NUMBER', count_decimal_places(round(random_num, 15)))
 
-    #     print('RANDOM NUMBER', random_num)
+        # print('EPS', eps)
 
-    #     print('1 - RANDOM NUMBER', 1.0 - random_num)
+        print('1 - RANDOM NUMBER', 1.0 - random_num)
+        # print('NR DECIMAL PLACES RANDOM NUMBER', count_decimal_places(round(1.0 - random_num, 15)))
 
-    #     # print('EQUAL PARENTS', p1.geno() == p2.geno())
+        # print('EQUAL PARENTS', p1.geno() == p2.geno())
 
-    #     print('EQUAL PARENTS OUTPUT', np.all(fitness(p1)[1] == fitness(p2)[1]))
-    #     print('EQUAL CHILD AND P1 OUTPUTS', np.all(fitness(p1)[1] == fitness(offspring)[1]))
+        print('EQUAL PARENTS OUTPUT', np.all(fitness(p1)[1] == fitness(p2)[1]))
+        print('EQUAL CHILD AND P1 OUTPUTS', np.all(fitness(p1)[1] == fitness(offspring)[1]))
 
-    #     print('P1 OUTPUT HARDCODED', p1(*dataset[0]), ',', p1(*dataset[1]))
-    #     print('P2 OUTPUT HARDCODED', p2(*dataset[0]), ',', p2(*dataset[1]))
+        print('P1 OUTPUT HARDCODED', p1(*dataset[0]), ',', p1(*dataset[1]))
+        print('P2 OUTPUT HARDCODED', p2(*dataset[0]), ',', p2(*dataset[1]))
 
-    #     print('FIRST OBS CHILD', (p1(*dataset[0]) * random_num) + (p2(*dataset[0]) * (1.0 - random_num)))
-    #     print('CHILD OUTPUT HARDCODED: [', (p1(*dataset[0]) * random_num) + (p2(*dataset[0]) * (1.0 - random_num)), ',', \
-    #           (p1(*dataset[1]) * random_num) + (p2(*dataset[1]) * (1 - random_num)))
+        print('CHILD OUTPUT HARDCODED: [', (p1(*dataset[0]) * random_num) + (p2(*dataset[0]) * (1.0 - random_num)), ',', \
+              (p1(*dataset[1]) * random_num) + (p2(*dataset[1]) * (1 - random_num)))
 
-    #     print('P1 FITNESS', fitness(p1)[0])
-    #     print('P2 FITNESS', fitness(p2)[0])
-    #     print('OFFSPRING FITNESS', fitness(offspring)[0])
+        print('NR DECIMAL PLACES OUTPUT P1 HARDCODED', count_decimal_places(p1(*dataset[0])))
+        print('NR DECIMAL PLACES OUTPUT P2 HARDCODED', count_decimal_places(p2(*dataset[0])))
+        print('NR DECIMAL PLACES OUTPUT CHILD HARDCODED', count_decimal_places((p1(*dataset[0]) * random_num) + (p2(*dataset[0]) * (1.0 - random_num))))
 
-    #     print('TARGET', target)
-    #     print('OUTPUT CHILDREN', fitness(offspring)[1])
-    #     print('OUTPUT P1', fitness(p1)[1])
-    #     print('OUTPUT P2', fitness(p2)[1])
+        print('FITNESS OUTPUT P1', fitness(p1)[1][0])
+        print('FITNESS OUTPUT P2', fitness(p2)[1][0])
+        print('FITNESS OUTPUT CHILD', fitness(offspring)[1][0])
 
-    #     raise Exception('Crossover anomaly!!!')
+        print('NR DECIMAL PLACES FITNESS OUTPUT P1', count_decimal_places(fitness(p1)[1][0]))
+        print('NR DECIMAL PLACES FITNESS OUTPUT P2', count_decimal_places(fitness(p2)[1][0]))
+        print('NR DECIMAL PLACES FITNESS OUTPUT CHILD', count_decimal_places(fitness(offspring)[1][0]))
+
+        print('P1 FITNESS', fitness(p1)[0])
+        print('P2 FITNESS', fitness(p2)[0])
+        print('OFFSPRING FITNESS', fitness(offspring)[0])
+
+        print('TARGET', target)
+        print('OUTPUT CHILDREN', fitness(offspring)[1])
+        print('OUTPUT P1', fitness(p1)[1])
+        print('OUTPUT P2', fitness(p2)[1])
+
+        raise Exception('Crossover anomaly!!!')
     
     return offspring
 
