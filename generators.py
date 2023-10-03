@@ -23,10 +23,10 @@ def memoize(f):
             return f.cache[args]
         # Otherwise calculate output
         else:
-            f.cache[args] = round(f(*args), 17) # calculates the output of args
+            f.cache[args] = f(*args) # calculates the output of args
             # print('NOT IN CACHE')
             return f.cache[args]
-        
+                
     return decorated_function
 
 def safe_division(x, y):
