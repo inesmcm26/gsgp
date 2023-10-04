@@ -1,9 +1,6 @@
 import random
 from math import exp
 import numpy as np
-import decimal
-
-decimal.getcontext().prec = 14
 
 from configs import MUTATION_STEP
 from data import target
@@ -14,7 +11,9 @@ from fitness import rmse as fitness
 
 from data import dataset
 
-eps = 1e-15
+from selection import tournament
+
+eps = 1e-7
 
 def count_decimal_places(number):
     if isinstance(number, float):
@@ -147,3 +146,31 @@ def mutation(p):
 
     # print('MUTATION OFFSPRING', offspring.geno(), 'FITNESS', fitness(offspring)[0])
     return offspring
+
+
+def generate_artifical_rf(pop):
+    # re1 = randexpr(DEPTH)
+    # rf1 = eval('lambda ' + ', '.join(vars) + ': ' + re1)
+    # rf1 = memoize(rf1)
+    # rf1.geno = lambda: re1
+
+    # re2 = '-' + re1
+    # print(re2)
+    # rf2 = eval('lambda ' + ', '.join(vars) + ': ' + re2)
+    # rf2 = memoize(rf2)
+    # rf2.geno = lambda: re2
+
+    # # return [rf1, rf2]
+
+    # for i in range(10):
+    #     re = randexpr(DEPTH)
+    #     rf = eval('lambda ' + ', '.join(vars) + ': ' + re)
+    #     rf = memoize(rf)
+    #     rf.geno = lambda: re
+    #     pop.append(rf)
+
+    p1 = tournament(pop, 3)
+    p2 = tournament(pop, 3)
+    child = crossover(p1, p2)
+
+    return [p1, p2, child]

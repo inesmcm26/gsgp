@@ -5,7 +5,7 @@ from configs import NUMVARS, GENERATIONS, POPSIZE, MUT_PROB, XO_PROB, TOURNAMENT
 
 from data import dataset, target
 from generators import randfunct
-from operators import mutation, crossover
+from operators import mutation, crossover, generate_artifical_rf
 from fitness import rmse as fitness
 from selection import tournament
 from convex_hull import is_inside_convex_hull
@@ -26,8 +26,6 @@ def evolve():
     is_inside = is_inside_convex_hull(pop)
 
     # print(is_inside)
-
-    # return
 
     for gen in range(GENERATIONS+1):
         print()

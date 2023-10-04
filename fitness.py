@@ -29,4 +29,4 @@ def rmse(individual):
 
     outputs = np.apply_along_axis(lambda x: individual(*x), axis=1, arr = dataset)
     
-    return round(np.sqrt(np.mean(np.square(outputs - target))), 17), outputs
+    return np.sqrt(np.mean(np.square(outputs - target))), outputs

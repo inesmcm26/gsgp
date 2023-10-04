@@ -17,10 +17,6 @@ def is_inside_convex_hull(ind_list):
         errors @ a == np.zeros(M)  # Corrected equation
     ]
 
-    # Create additional constraints to ensure ai >= 0 for all i
-    for i in range(N):
-        constraints.append(a[i] >= 0)
-
     objective = cp.Minimize(0)  # Feasibility problem
 
     prob = cp.Problem(objective, constraints)
@@ -29,7 +25,7 @@ def is_inside_convex_hull(ind_list):
     prob.solve()
 
     if prob.status == cp.OPTIMAL:
-        print("Feasible solution found.")
+        print("Feasible solution found:", a.value)
         return True
     else:
         print("No feasible solution found.")
