@@ -4,11 +4,11 @@ import numpy as np
 from configs import NUMVARS, GENERATIONS, POPSIZE, MUT_PROB, XO_PROB, TOURNAMENT_SIZE
 
 from data import dataset, target
-from generators import randfunct
-from operators import mutation, crossover, generate_artifical_rf
+from generators import randfunct, competent_initialization
+from operators import mutation, crossover
 from fitness import rmse as fitness
 from selection import tournament
-from convex_hull import is_inside_convex_hull
+from convex_hull import is_inside_convex_hull, get_errors_matrix
 
 from plots import plot_single_run
 
@@ -21,11 +21,23 @@ fitness_history = []
     
 def evolve():
     'Main function.'
-    pop = [randfunct() for _ in range(POPSIZE)] # initialise population
+    # pop = [randfunct() for _ in range(POPSIZE)] # initialize population
 
-    is_inside = is_inside_convex_hull(pop)
+    inside_count = 0
 
-    # print(is_inside)
+    for _ in range(1000):
+        pop = competent_initialization()
+
+        errors = get_errors_matrix(pop, target)
+        is_inside = is_inside_convex_hull(errors)
+
+        if is_inside:
+            inside_count = inside_count + 1
+        # print(is_inside)
+
+    print(inside_count)
+
+    return
 
     for gen in range(GENERATIONS+1):
         print()
@@ -35,7 +47,7 @@ def evolve():
         
         # print('---------------------------')
         # for ind in graded_pop:
-        #     print('IND', ind[1].geno(), 'FITNESS', ind[0])
+        #     print('IND', ind[1].geno, 'FITNESS', ind[0])
         # print('---------------------------')
 
         sorted_pop = [ind[1] for ind in sorted(graded_pop, key = lambda x: x[0])] # Sort population on fitness
@@ -73,7 +85,7 @@ def evolve():
             else:
                 # print('REPLICATION')
                 child = tournament(pop, TOURNAMENT_SIZE)
-                # print('CHILD', child.geno())
+                # print('CHILD', child.geno)
 
             # Add child to population
             new_pop.append(child)
@@ -82,16 +94,16 @@ def evolve():
 
         # print('NEW POPULATION')
         # for ind in pop:
-        #     print('IND', ind.geno())
+        #     print('IND', ind.geno)
 
     best_ind = sorted_pop[0]
     best_fitness = fitness(sorted_pop[0])[0]
 
-    print('Best individual in last population:', #best_ind.geno(),
+    print('Best individual in last population:', #best_ind.geno,
           ' \n With fitness:', best_fitness)
     print('Predictions\n', np.apply_along_axis(lambda x: best_ind(*x), axis=1, arr = dataset))
 
 evolve()
 
 
-plot_single_run(fitness_history)
+# plot_single_run(fitness_history)

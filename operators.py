@@ -53,17 +53,17 @@ def crossover(p1,p2):
     # print('----------------------- CROSSOVER ----------------------------')
 
     # print('PARENTS')
-    # print('P1', p1.geno())
-    # print('P2', p2.geno())
+    # print('P1', p1.geno)
+    # print('P2', p2.geno)
     
     random_num = random.uniform(0, 1)
 
     offspring = lambda *x: ((p1(*x) * random_num) + (p2(*x) * (1.0 - random_num)))  # Define arithmetic crossover operation
     offspring = memoize(offspring) # add cache
 
-    offspring.geno = lambda: '(({} * {}) + ({} * (1 - {})))'.format(p1.geno(), random_num, p2.geno(), random_num)
+    offspring.geno = lambda: '(({} * {}) + ({} * (1 - {})))'.format(p1.geno, random_num, p2.geno, random_num)
     
-    # print('OFFSPRING', offspring.geno(), 'FITNESS', fitness(offspring)[0])
+    # print('OFFSPRING', offspring.geno, 'FITNESS', fitness(offspring)[0])
     if fitness(offspring)[0] > (fitness(p1)[0] + eps) and fitness(offspring)[0] > (fitness(p2)[0] + eps):
 
         print('RANDOM NUMBER', random_num)
@@ -74,7 +74,7 @@ def crossover(p1,p2):
         print('1 - RANDOM NUMBER', 1.0 - random_num)
         # print('NR DECIMAL PLACES RANDOM NUMBER', count_decimal_places(round(1.0 - random_num, 15)))
 
-        # print('EQUAL PARENTS', p1.geno() == p2.geno())
+        # print('EQUAL PARENTS', p1.geno == p2.geno)
 
         print('EQUAL PARENTS OUTPUT', np.all(fitness(p1)[1] == fitness(p2)[1]))
         print('EQUAL CHILD AND P1 OUTPUTS', np.all(fitness(p1)[1] == fitness(offspring)[1]))
@@ -128,13 +128,13 @@ def mutation(p):
     """
     # print('----------------------- MUTATION ----------------------------')
 
-    # print('PARENT', p.geno())
+    # print('PARENT', p.geno)
 
     rf1 = randfunct()
     rf2 = randfunct()
 
-    # print('RF1', rf1.geno())
-    # print('RF2', rf2.geno())
+    # print('RF1', rf1.geno)
+    # print('RF2', rf2.geno)
 
     ms = random.uniform(0, MUTATION_STEP)
 
@@ -142,9 +142,9 @@ def mutation(p):
 
     offspring = lambda *x: (p(*x) + (ms * sigmoid((rf1(*x) - rf2(*x)))))  # Define arithmetic crossover operation
     offspring = memoize(offspring)
-    offspring.geno = lambda: '({} + ({} * sigmoid(({} - {}))))'.format(p.geno(), ms, rf1.geno(), rf2.geno())
+    offspring.geno = lambda: '({} + ({} * sigmoid(({} - {}))))'.format(p.geno, ms, rf1.geno, rf2.geno)
 
-    # print('MUTATION OFFSPRING', offspring.geno(), 'FITNESS', fitness(offspring)[0])
+    # print('MUTATION OFFSPRING', offspring.geno, 'FITNESS', fitness(offspring)[0])
     return offspring
 
 
